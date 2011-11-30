@@ -1,7 +1,11 @@
+require 'rubygems'
 require 'helper'
 
 class TestWesi < Test::Unit::TestCase
-  should "probably rename this file and start testing for real" do
-    flunk "hey buddy, you should probably rename this file and start testing for real"
-  end
+
+ context "Initial tests" do
+	should "check that 2+2=4!" do
+		assert_equal 2 + 2, 4
+	end
+ end
 end

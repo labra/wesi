@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+ 
+require 'sinatra'
+ 
+# otherwise sinatra won't always automagically launch its embedded
+# http server when this script is executed
+set :run, true
+ 
+get '/' do
+ return "Hi! from WESI"
+end

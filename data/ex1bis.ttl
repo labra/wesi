@@ -1,0 +1,7 @@
+@prefix e: <http://ejemplo.org#> .
+
+e:pepe e:nombre "Jose" .
+e:pepe e:edad 39 .
+
+e:luis e:nombre "Luis" .
+e:luis e:edad 27 .

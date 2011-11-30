@@ -1,0 +1,14 @@
+@prefix e:    <http://ejemplo.org#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+e:pepe e:nombre "Jose" .
+e:pepe e:edad 39 .
+
+e:luis e:nombre "Luis" .
+e:luis e:edad 27 .
+
+e:luis a e:Profesor .
+e:pepe a e:Becario .
+
+e:Profesor rdfs:subClassOf e:Persona .
+e:Becario rdfs:subClassOf e:Persona .
