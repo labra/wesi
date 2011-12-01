@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
- 
+
+$:.push '../lib' 
+require 'rubygems'
 require 'sinatra'
+require 'rdf2gv'
+require 'rdfGraph'
  
 # otherwise sinatra won't always automagically launch its embedded
 # http server when this script is executed
@@ -8,4 +12,31 @@ set :run, true
  
 get '/' do
  return "Hi! from WESI"
+end
+
+get '/graph/:nombre' do
+ return "Hi from graph " + params[:nombre]
+end
+
+get '/graph/:nombre' do
+ return "Hi from graph " + params[:nombre]
+end
+
+get '/rdf' do
+ erb :rdf
+end
+
+get '/rdfview' do
+ erb :rdfview
+end
+
+post '/rdf' do
+ g = RDFGraph.new
+ g.parse(params[:rdf])
+ out = g.gv('png','public/outFile.png')
+ erb :show
+end
+
+not_found do
+ halt 404, 'page not found'
 end

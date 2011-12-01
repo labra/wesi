@@ -1,12 +1,16 @@
 require 'rubygems'
 require 'java'
+require 'rdf2gv'
 #require 'rest_client'
 #require 'JSON'
 
 java_import 'java.io.ByteArrayOutputStream'
+include_class 'java.io.StringReader'
+
 java_import 'com.hp.hpl.jena.rdf.model.ModelFactory'
 java_import 'com.hp.hpl.jena.rdf.model.Model'
 java_import 'com.hp.hpl.jena.util.FileManager'
+java_import 'com.hp.hpl.jena.shared.PrefixMapping'
 
 java_import 'com.hp.hpl.jena.query.Query'
 java_import 'com.hp.hpl.jena.query.QueryFactory'
@@ -25,9 +29,9 @@ class RDFGraph
     @model = model
   end
   
-  @lookupPrefix = true 
-  @filePrefixTable = "prefixTable.json"
-#  loadPrefixes
+  # We add common prefixes like rdf, rdfs, etc.
+  @model.withDefaultMappings(PrefixMapping.Standard)
+
  end
  
  def addStatement(s,p,o) 
@@ -56,6 +60,11 @@ class RDFGraph
   @model.write(os, format)
  end
 
+ def gv(out_format, out_file, gv_path = "")
+  gv = RDF2Gv.new(@model,gv_path)
+  gv.save(out_format,out_file)
+ end
+ 
  def showPrefixes
   @model.getNsPrefixMap.each { |k,v|
     puts k + " -> " + v
@@ -93,9 +102,15 @@ class RDFGraph
   }
  end
 
- def read(uri)
+ def parse(str)
+  java_string = java.lang.String.new(str.to_java_bytes).java_object
+  reader = StringReader.new(java_string)
+  @model.read(reader,"","TURTLE")
+ end
+ 
+ def read(uri, format="TURTLE")
   file = FileManager.get.open uri
-  @model.read(file, "", "TURTLE")
+  @model.read(file, "", format)
  end
  
  def rdfs
@@ -148,5 +163,5 @@ class RDFGraph
    options && options.has_key?( opt )
  end
 
- end
+end
 

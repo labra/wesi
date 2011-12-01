@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<title 
+ xmlns:dc="http://purl.org/dc/terms/" 
+ property="dc:title">WESI </title>
+<meta charset="utf-8">
+
+<style type="text/css">
+body
+{
+	font-family: sans-serif;
+}
+h1 { font-size: 300%; text-align:center; padding: 0.67em 1em 1.33em; margin: 0;}
+
+#header-content ul , ul.tabNavigation {
+	font-weight: bold;
+        color: #FFF;
+        list-style: none;
+        margin: 0; padding: 0;          
+}
+#header-content li , ul.tabNavigation li {
+        display: inline;
+}
+#header-content li a , ul.tabNavigation li a {
+        float: left;
+        display: block;
+        padding: 3px 12px;      
+        border-right: 1px solid #272727;
+	   }
+#header-content li a:hover , ul.tabNavigation li a:hover {
+        background: gray;
+        }
+#header-content li a.selected , ul.tabNavigation li a.selected {
+        }
+
+div.tabs
+{
+	clear:left;
+	border: 4px solid #65944A;
+	padding: 1em 3em;
+}
+</style>
+
+<script 
+ type="text/javascript" 
+ src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js">
+</script>
+<script type="text/javascript">
+	$(function () {
+		$('.tabs').addClass('jquery');
+	
+		var tabContainers = $('.tabs > div');
+		tabContainers.hide().filter(':first').show();
+				
+		$('.tabNavigation a').click(function () {
+			tabContainers.hide();
+			tabContainers.filter(this.hash).show();
+			$('.tabNavigation a').removeClass('selected');
+			$(this).addClass('selected');
+			if (this.getAttribute('data-default-tab'))
+				{ window.location.hash = ''; }
+			else
+				{ window.location.hash = '#' + (tabContainers.filter(this.hash).attr('id')); }
+			return false;
+		});
+
+		if (window.location.hash) {
+			$('.tabNavigation a').each(function (i,a) {
+				if (a.hash == window.location.hash) $(a).click();
+			})
+		}
+		else {
+			$('.tabNavigation a').filter('*[data-default-tab="1"]').click();
+		}
+	});
+			
+</script>
+		
+<h1>Wesi - RDF Viewer</h1>
+
+<ul class="tabNavigation">
+	<li><a data-default-tab="1" href="#form_post">By Direct Input</a></li>
+	<li><a href="#form_upload">By File Upload</a></li>
+	<li><a href="#form_url">By URI</a></li>
+</ul>
+
+<div class="tabs">
+	<div id="form_url">
+		<form action="check" method="get" enctype="application/x-www-form-urlencoded">
+			<p>
+				<label for="url">URL</label><br />
+				<input name="url" type="url" id="url" style="width:24em" />
+				<input type="submit" />
+			</p>
+		</form>
+	</div>
+
+	<div id="form_upload">
+		<form action="check" method="post" enctype="multipart/form-data">
+			<p>
+				<label for="file">File</label><br />
+				<input type="file" name="file" id="file" />
+				<input type="submit" />
+			</p>
+		</form>
+	</div>
+
+<div id="form_post">
+<form action="/rdf" method="post" enctype="application/x-www-form-urlencoded">
+<p><label for="data">RDF data</label><br />
+<textarea rows="6" cols="40" name="rdf" style="width:100%">
+@prefix e: <http://example.org#> .
+
+e:John a e:Person .
+</textarea>
+<br />
+<input type="submit" />
+</p>
+<p>Input format:</p>
+</form>
+	</div>
+</div>
+

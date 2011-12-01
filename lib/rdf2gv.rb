@@ -8,24 +8,17 @@ java_import 'com.hp.hpl.jena.util.FileManager'
 java_import 'com.hp.hpl.jena.shared.PrefixMapping'
 
 class RDF2Gv
-   def initialize(rdf_file, gv_path, format) 
-      @rdf_file = rdf_file
-      @model = ModelFactory.create_default_model
-
-	  # We add common prefixes like rdf, rdfs, etc.
-	  @model.withDefaultMappings(PrefixMapping.Standard)
-
-	  file = FileManager.get.open rdf_file
-	  @model.read(file, "", format)
-      @graph = GraphViz.new(:RDF, :path => gv_path)
-      parse
+   def initialize(model, gv_path) 
+      @model = model
+	  @gv    = GraphViz.new(:RDF, :path => gv_path)
+      model2gv
    end
 
    def save(format, file)
-      @graph.output(format => file)
+      @gv.output(format => file)
    end
 
-   def parse
+   def model2gv
    	 anonStyle = { 
 	      :shape => "circle" , 
 		  :label => "", 
@@ -42,23 +35,28 @@ class RDF2Gv
 
      @model.listStatements.each { |s|
 	  if s.subject.isAnon 
-	   subj = @graph.add_node(s.subject.toString,anonStyle) 
+	   subj = @gv.add_node(s.subject.toString,anonStyle) 
 	  else
-	   subj = @graph.add_node(prefixName(s.subject), uriStyle)
+	   subjLabel = prefixName(s.subject)
+	   subj = @gv.add_node(subjLabel, 
+	                       uriStyle.merge({:label => subjLabel}))
 	  end
 
 	  if s.object.isAnon
-	   obj = @graph.add_node(s.object.getId, anonStyle)
+	   obj = @gv.add_node(s.object.toString, anonStyle)
       elsif s.object.isURIResource
-	   obj = @graph.add_node(prefixName(s.object), uriStyle)
+	   objLabel = prefixName(s.object)
+	   obj = @gv.add_node(objLabel, 
+	                      uriStyle.merge({:label => objLabel}))
       elsif s.object.isLiteral
-	   lit = s.object
-       obj = @graph.add_node(lit.getLexicalForm, literalStyle)
+	   litLabel = s.object.getLexicalForm
+       obj = @gv.add_node(litLabel, 
+					      literalStyle.merge({ :label => litLabel }))
 	  else 
 	   throw "Unknown type of object" 
 	  end
 	  
-	  @graph.add_edge(subj,obj,{:label => prefixName(s.predicate) })
+	  @gv.add_edge(subj,obj,{:label => prefixName(s.predicate) })
 	 }
    end
    
